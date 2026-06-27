@@ -1,0 +1,86 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>Chat with your Second Brain</h1>
+      <p class="subtitle">Answers are grounded in your notes — no hallucination</p>
+    </div>
+    @if (messages().length > 0) {
+      <button class="btn btn-secondary" (click)="clearChat()">Clear</button>
+    }
+  </div>
+
+  <div class="chat-container">
+    <div class="messages-area">
+      @if (messages().length === 0) {
+        <div class="chat-empty">
+          <p>Ask anything about your notes</p>
+          <p class="chat-hint">Try: "What is the CAP theorem?" or "Summarize my notes on ACID"</p>
+        </div>
+      }
+
+      @for (msg of messages(); track $index; let msgIdx = $index) {
+        <div class="message-row" [class.user-row]="msg.role === 'user'">
+          <div
+            class="message-bubble"
+            [class.user-bubble]="msg.role === 'user'"
+            [class.ai-bubble]="msg.role === 'assistant'"
+          >
+            @if (msg.role === 'assistant' && !msg.content && isStreaming()) {
+              <span class="typing-dots">● ● ●</span>
+            } @else {
+              <p class="message-text">{{ msg.content }}</p>
+            }
+          </div>
+        </div>
+
+        @if (msg.sources && msg.sources.length > 0) {
+          <div class="sources-row">
+            <p class="sources-label">Sources used:</p>
+            <div class="sources-list">
+              @for (source of msg.sources; track source.noteId; let srcIdx = $index) {
+                <div class="source-card-wrapper"
+                     (click)="togglePopup($event, msgIdx + '-' + srcIdx)">
+                  <div class="source-card"
+                       [class.card-active]="activePopupKey() === msgIdx + '-' + srcIdx">
+                    <span class="source-title">{{ source.title }}</span>
+                    <span class="source-score">{{ (source.score * 100).toFixed(0) }}%</span>
+                  </div>
+                  @if (activePopupKey() === msgIdx + '-' + srcIdx) {
+                    <div class="source-popup" (click)="$event.stopPropagation()">
+                      <div class="popup-header">
+                        <span class="popup-title">{{ source.title }}</span>
+                        <button class="popup-close" (click)="activePopupKey.set(null)">✕</button>
+                      </div>
+                      <p class="popup-excerpt">{{ source.excerpt }}</p>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <div #messagesEnd></div>
+    </div>
+
+    <div class="input-area">
+      <textarea
+        class="chat-input"
+        [value]="inputValue"
+        (input)="inputValue = $any($event.target).value"
+        (keydown)="onKeydown($event)"
+        placeholder="Ask a question about your notes..."
+        rows="2"
+        [disabled]="isStreaming()"
+      ></textarea>
+      <button
+        class="btn btn-primary"
+        (click)="send()"
+        [disabled]="isStreaming() || !inputValue.trim()"
+      >
+        {{ isStreaming() ? 'Thinking…' : 'Send' }}
+      </button>
+    </div>
+  </div>
+</div>

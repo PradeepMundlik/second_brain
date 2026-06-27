@@ -1,0 +1,77 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1>Engineering Second Brain</h1>
+      <p class="subtitle">
+        {{ notes().length }} note{{ notes().length !== 1 ? 's' : '' }} in your knowledge base
+      </p>
+    </div>
+    <button class="btn btn-primary" (click)="toggleForm()">
+      {{ showForm() ? 'Cancel' : '+ New Note' }}
+    </button>
+  </div>
+
+  <app-search-bar (search)="onSearch($event)" (clear)="onClearSearch()" />
+
+  @if (showForm()) {
+    <div class="form-container" style="margin-top: 16px">
+      <h3>New Note</h3>
+      <app-note-form
+        (formSubmit)="onCreate($event)"
+        (cancel)="showForm.set(false)"
+      />
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  @if (searchActive()) {
+    <div class="search-results-section">
+      <div class="search-results-header">
+        @if (isSearching()) {
+          <p class="loading">Searching...</p>
+        } @else {
+          <p class="subtitle">
+            {{ searchResults().length }} result{{ searchResults().length !== 1 ? 's' : '' }} found
+          </p>
+        }
+      </div>
+
+      @if (!isSearching()) {
+        @if (searchResults().length === 0) {
+          <div class="empty-state">
+            <p>No notes matched your query.</p>
+            <p>Try different wording — semantic search finds meaning, not just keywords.</p>
+          </div>
+        } @else {
+          <div class="notes-list">
+            @for (result of searchResults(); track result.noteId) {
+              <app-search-result-card [result]="result" />
+            }
+          </div>
+        }
+      }
+    </div>
+  } @else {
+    @if (loading()) {
+      <p class="loading" style="margin-top: 24px">Loading...</p>
+    } @else if (notes().length === 0) {
+      <div class="empty-state">
+        <p>No notes yet.</p>
+        <p>Create your first note to get started!</p>
+      </div>
+    } @else {
+      <div class="notes-list" style="margin-top: 16px">
+        @for (note of notes(); track note.id) {
+          <app-note-card
+            [note]="note"
+            (update)="onUpdate(note.id, $event)"
+            (delete)="onDelete(note.id)"
+          />
+        }
+      </div>
+    }
+  }
+</div>

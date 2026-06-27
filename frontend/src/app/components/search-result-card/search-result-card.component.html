@@ -1,0 +1,16 @@
+<div class="note-card search-result-card">
+  <div class="card-header">
+    <h3>{{ result.title }}</h3>
+    <span class="score-badge">{{ scorePercent }} match</span>
+  </div>
+
+  <p class="excerpt">{{ result.excerpt }}</p>
+
+  @if (result.tags.length > 0) {
+    <div class="tags">
+      @for (tag of result.tags; track tag) {
+        <span class="tag">{{ tag }}</span>
+      }
+    </div>
+  }
+</div>

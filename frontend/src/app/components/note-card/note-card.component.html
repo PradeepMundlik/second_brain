@@ -1,0 +1,30 @@
+<div class="note-card">
+  @if (editing()) {
+    <app-note-form
+      [initial]="{ title: note.title, content: note.content, tags: note.tags }"
+      submitLabel="Update"
+      (formSubmit)="onUpdate($event)"
+      (cancel)="editing.set(false)"
+    />
+  } @else {
+    <div class="card-header">
+      <h3>{{ note.title }}</h3>
+      <div class="card-actions">
+        <button class="btn btn-warning" (click)="editing.set(true)">Edit</button>
+        <button class="btn btn-danger" (click)="delete.emit()">Delete</button>
+      </div>
+    </div>
+    @if (note.summary) {
+      <p class="note-summary">{{ note.summary }}</p>
+    }
+    <p class="card-content">{{ preview }}</p>
+    @if (note.tags.length > 0) {
+      <div class="tags">
+        @for (tag of note.tags; track tag) {
+          <span class="tag">{{ tag }}</span>
+        }
+      </div>
+    }
+    <p class="card-date">{{ formattedDate }}</p>
+  }
+</div>

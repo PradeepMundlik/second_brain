@@ -1,0 +1,12 @@
+<div class="search-bar">
+  <input
+    class="search-input"
+    type="text"
+    placeholder="Search your notes semantically... (e.g. 'how to handle duplicate payments')"
+    [value]="query"
+    (input)="onInput($any($event.target).value)"
+  />
+  @if (query) {
+    <button class="search-clear" (click)="onClear()" title="Clear search">✕</button>
+  }
+</div>

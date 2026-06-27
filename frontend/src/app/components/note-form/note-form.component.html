@@ -1,0 +1,33 @@
+<form (ngSubmit)="onSubmit()" #noteForm="ngForm">
+  <div class="form-group">
+    <input
+      class="form-input"
+      placeholder="Title"
+      [(ngModel)]="title"
+      name="title"
+      required
+    />
+  </div>
+  <div class="form-group">
+    <textarea
+      class="form-input"
+      placeholder="Content (markdown works great here)"
+      [(ngModel)]="content"
+      name="content"
+      required
+      rows="8"
+    ></textarea>
+  </div>
+  <div class="form-group">
+    <input
+      class="form-input"
+      placeholder="Tags (comma separated: database, system-design)"
+      [(ngModel)]="tagInput"
+      name="tagInput"
+    />
+  </div>
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">{{ submitLabel }}</button>
+    <button type="button" class="btn btn-secondary" (click)="cancel.emit()">Cancel</button>
+  </div>
+</form>
